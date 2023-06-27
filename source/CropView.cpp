@@ -12,6 +12,7 @@
 #include <String.h>
 #include <TranslationUtils.h>
 #include <TranslatorFormats.h>
+#include <iostream>
 
 
 CropView::CropView()
@@ -58,6 +59,26 @@ CropView::LayoutChanged()
 	if (fImageLoaded) {
 		_SetDrawingRect();
 		_SetMarkerRect();
+	}
+}
+
+
+void
+CropView::MouseDown(BPoint where)
+{
+	if (fDrawingRect.Contains(where)) {
+		std::cout << "Mouse down(" << where.x << ":" << where.y << ")" << std::endl;
+	}
+
+
+}
+
+
+void
+CropView::MouseUp(BPoint where)
+{
+	if (fDrawingRect.Contains(where)) {
+		std::cout << "Mouse up(" << where.x << ":" << where.y << ")" << std::endl;
 	}
 }
 

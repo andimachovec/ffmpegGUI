@@ -22,6 +22,8 @@ public:
 
 	void		Draw(BRect updateRect);
 	void 		LayoutChanged();
+	void 		MouseDown(BPoint where) override;
+	void 		MouseUp(BPoint where) override;
 
 	status_t	LoadImage(const char* path);
 
