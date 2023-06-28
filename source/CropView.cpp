@@ -25,6 +25,7 @@ CropView::CropView()
 	fLeftCrop = 0;
 	fRightCrop = 0;
 	fEnabled = false;
+	fMouseDown = false;
 }
 
 
@@ -66,19 +67,36 @@ CropView::LayoutChanged()
 void
 CropView::MouseDown(BPoint where)
 {
-	if (fDrawingRect.Contains(where)) {
-		std::cout << "Mouse down(" << where.x << ":" << where.y << ")" << std::endl;
+	if (fEnabled) {
+		uint32 buttons;
+		GetMouse(nullptr, &buttons);
+
+		if (fDrawingRect.Contains(where) and (buttons == B_PRIMARY_MOUSE_BUTTON)) {
+			fMouseDown = true;
+			SetMouseEventMask(B_FULL_POINTER_HISTORY);
+			std::cout << "Mouse down at " << where.x << ":" << where.y << std::endl;
+		}
 	}
-
-
 }
 
 
 void
 CropView::MouseUp(BPoint where)
 {
-	if (fDrawingRect.Contains(where)) {
-		std::cout << "Mouse up(" << where.x << ":" << where.y << ")" << std::endl;
+	if (fMouseDown) {
+		std::cout << "Mouse up at " << where.x << ":" << where.y << std::endl;
+		fMouseDown = false;
+		SetMouseEventMask(B_NO_POINTER_HISTORY);
+	}
+}
+
+
+void
+CropView::MouseMoved(BPoint where, uint32 code, const BMessage* dragMessage)
+{
+	if (fMouseDown) {
+	std::cout << "Mouse moved to " << where.x << ":" << where.y << std::endl;
+
 	}
 }
 

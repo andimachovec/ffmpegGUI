@@ -24,6 +24,7 @@ public:
 	void 		LayoutChanged();
 	void 		MouseDown(BPoint where) override;
 	void 		MouseUp(BPoint where) override;
+	void 		MouseMoved(BPoint where, uint32 code, const BMessage* dragMessage) override;
 
 	status_t	LoadImage(const char* path);
 
@@ -50,6 +51,8 @@ private:
 	int32 		fTopCrop;
 	int32 		fBottomCrop;
 	bool 		fEnabled;
+
+	bool		fMouseDown;
 };
 
 #endif
