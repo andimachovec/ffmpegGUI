@@ -72,6 +72,7 @@ CropView::MouseDown(BPoint where)
 		GetMouse(nullptr, &buttons);
 
 		if (fDrawingRect.Contains(where) and (buttons == B_PRIMARY_MOUSE_BUTTON)) {
+			fMarkerTopLeftPoint = where;
 			fMouseDown = true;
 			SetMouseEventMask(B_FULL_POINTER_HISTORY);
 			std::cout << "Mouse down at " << where.x << ":" << where.y << std::endl;
@@ -84,9 +85,12 @@ void
 CropView::MouseUp(BPoint where)
 {
 	if (fMouseDown) {
-		std::cout << "Mouse up at " << where.x << ":" << where.y << std::endl;
 		fMouseDown = false;
 		SetMouseEventMask(B_NO_POINTER_HISTORY);
+		std::cout << "Mouse up at " << where.x << ":" << where.y << std::endl;
+		std::cout << "Cropping: top=" << fTopCrop << " left=" << fLeftCrop <<
+				" bottom=" << fBottomCrop << " right=" << fRightCrop << std::endl;
+
 	}
 }
 
@@ -95,7 +99,19 @@ void
 CropView::MouseMoved(BPoint where, uint32 code, const BMessage* dragMessage)
 {
 	if (fMouseDown) {
-	std::cout << "Mouse moved to " << where.x << ":" << where.y << std::endl;
+
+		fMarkerRect.SetLeftTop(fMarkerTopLeftPoint);
+		fMarkerRect.SetRightBottom(where);
+
+		fLeftCrop = (fMarkerRect.left - fDrawingRect.left) / fResizeFactor;
+		fRightCrop = (fDrawingRect.right - fMarkerRect.right) / fResizeFactor;
+		fBottomCrop = (fDrawingRect.bottom - fMarkerRect.bottom) / fResizeFactor;
+		fTopCrop = (fMarkerRect.top - fDrawingRect.top) / fResizeFactor;
+
+		std::cout << "drawing rectangle between " << fMarkerTopLeftPoint.x << ":" <<
+			fMarkerTopLeftPoint.y << " and " << where.x << ":" << where.y << std::endl;
+
+		Invalidate();
 
 	}
 }

@@ -53,6 +53,7 @@ private:
 	bool 		fEnabled;
 
 	bool		fMouseDown;
+	BPoint		fMarkerTopLeftPoint;
 };
 
 #endif
