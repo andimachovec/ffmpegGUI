@@ -419,6 +419,15 @@ MainWindow::MessageReceived(BMessage* message)
 
 			break;
 		}
+		case CV_UPDATE_CROPVALUES:
+		{
+			fTopCrop->SetValue(message->GetInt32("topcrop", 0));
+			fLeftCrop->SetValue(message->GetInt32("leftcrop", 0));
+			fRightCrop->SetValue(message->GetInt32("rightcrop", 0));
+			fBottomCrop->SetValue(message->GetInt32("bottomcrop", 0));
+			_BuildLine();
+			break;
+		}
 		case M_VBITRATE:
 		case M_FRAMERATE:
 		case M_XRES:
@@ -1271,7 +1280,7 @@ MainWindow::_BuildCroppingOptions()
 	fLeftCrop->SetMinValue(0);
 	fRightCrop->SetMinValue(0);
 
-	fCropView = new CropView();
+	fCropView = new CropView(new BMessenger(this));
 	fResetCroppingButton = new BButton("", B_TRANSLATE("Reset"), new BMessage(M_RESET_CROPPING));
 	fNewPreviewButton = new BButton("", B_TRANSLATE("New preview"), new BMessage(M_NEW_PREVIEW));
 

@@ -14,11 +14,16 @@
 
 class BBitmap;
 class BString;
+class BMessenger;
+
+enum {
+	CV_UPDATE_CROPVALUES = 'cv00',
+};
 
 
 class CropView : public BView {
 public:
-				CropView();
+				CropView(BMessenger* updateTarget);
 
 	void		Draw(BRect updateRect);
 	void 		LayoutChanged();
@@ -54,6 +59,8 @@ private:
 
 	bool		fMouseDown;
 	BPoint		fMarkerTopLeftPoint;
+
+	BMessenger* fUpdateTarget;
 };
 
 #endif

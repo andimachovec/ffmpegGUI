@@ -12,12 +12,14 @@
 #include <String.h>
 #include <TranslationUtils.h>
 #include <TranslatorFormats.h>
+#include <Messenger.h>
 #include <iostream>
 
 
-CropView::CropView()
+CropView::CropView(BMessenger* updateTarget)
 	:
-	BView("", B_SUPPORTS_LAYOUT | B_WILL_DRAW)
+	BView("", B_SUPPORTS_LAYOUT | B_WILL_DRAW),
+	fUpdateTarget(updateTarget)
 {
 	fImageLoaded = false;
 	fTopCrop = 0;
@@ -107,6 +109,15 @@ CropView::MouseMoved(BPoint where, uint32 code, const BMessage* dragMessage)
 		fRightCrop = (fDrawingRect.right - fMarkerRect.right) / fResizeFactor;
 		fBottomCrop = (fDrawingRect.bottom - fMarkerRect.bottom) / fResizeFactor;
 		fTopCrop = (fMarkerRect.top - fDrawingRect.top) / fResizeFactor;
+
+		BMessage update_msg(CV_UPDATE_CROPVALUES);
+		update_msg.AddInt32("leftcrop", fLeftCrop);
+		update_msg.AddInt32("rightcrop", fRightCrop);
+		update_msg.AddInt32("topcrop", fTopCrop);
+		update_msg.AddInt32("bottomcrop", fBottomCrop);
+
+		fUpdateTarget->SendMessage(&update_msg);
+
 
 		std::cout << "drawing rectangle between " << fMarkerTopLeftPoint.x << ":" <<
 			fMarkerTopLeftPoint.y << " and " << where.x << ":" << where.y << std::endl;
