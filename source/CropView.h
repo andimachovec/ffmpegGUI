@@ -43,6 +43,7 @@ public:
 private:
 	void		_SetDrawingRect();
 	void 		_SetMarkerRect();
+	void 		_UpdateCropParams();
 
 	BBitmap*	fCurrentImage;
 	bool		fImageLoaded;

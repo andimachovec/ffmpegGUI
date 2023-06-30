@@ -77,7 +77,6 @@ CropView::MouseDown(BPoint where)
 			fMarkerTopLeftPoint = where;
 			fMouseDown = true;
 			SetMouseEventMask(B_FULL_POINTER_HISTORY);
-			std::cout << "Mouse down at " << where.x << ":" << where.y << std::endl;
 		}
 	}
 }
@@ -89,10 +88,15 @@ CropView::MouseUp(BPoint where)
 	if (fMouseDown) {
 		fMouseDown = false;
 		SetMouseEventMask(B_NO_POINTER_HISTORY);
-		std::cout << "Mouse up at " << where.x << ":" << where.y << std::endl;
-		std::cout << "Cropping: top=" << fTopCrop << " left=" << fLeftCrop <<
-				" bottom=" << fBottomCrop << " right=" << fRightCrop << std::endl;
 
+		if (where == fMarkerTopLeftPoint) {  //mouse hasn´t been moved
+			fLeftCrop = 0;
+			fRightCrop = 0;
+			fTopCrop = 0;
+			fBottomCrop = 0;
+
+			_UpdateCropParams();
+		}
 	}
 }
 
@@ -101,29 +105,23 @@ void
 CropView::MouseMoved(BPoint where, uint32 code, const BMessage* dragMessage)
 {
 	if (fMouseDown) {
+		if (fDrawingRect.Contains(where) and (where.x > fMarkerTopLeftPoint.x) and (where.y > fMarkerTopLeftPoint.y)) {
+			// set marker rectangle
+			fMarkerRect.SetLeftTop(fMarkerTopLeftPoint);
+			fMarkerRect.SetRightBottom(where);
 
-		fMarkerRect.SetLeftTop(fMarkerTopLeftPoint);
-		fMarkerRect.SetRightBottom(where);
+			// calculate crop parameters in 1:1 scale
+			fLeftCrop = (fMarkerRect.left - fDrawingRect.left) / fResizeFactor;
+			fRightCrop = (fDrawingRect.right - fMarkerRect.right) / fResizeFactor;
+			fBottomCrop = (fDrawingRect.bottom - fMarkerRect.bottom) / fResizeFactor;
+			fTopCrop = (fMarkerRect.top - fDrawingRect.top) / fResizeFactor;
 
-		fLeftCrop = (fMarkerRect.left - fDrawingRect.left) / fResizeFactor;
-		fRightCrop = (fDrawingRect.right - fMarkerRect.right) / fResizeFactor;
-		fBottomCrop = (fDrawingRect.bottom - fMarkerRect.bottom) / fResizeFactor;
-		fTopCrop = (fMarkerRect.top - fDrawingRect.top) / fResizeFactor;
+			// send crop parameters to target view
+			_UpdateCropParams();
 
-		BMessage update_msg(CV_UPDATE_CROPVALUES);
-		update_msg.AddInt32("leftcrop", fLeftCrop);
-		update_msg.AddInt32("rightcrop", fRightCrop);
-		update_msg.AddInt32("topcrop", fTopCrop);
-		update_msg.AddInt32("bottomcrop", fBottomCrop);
-
-		fUpdateTarget->SendMessage(&update_msg);
-
-
-		std::cout << "drawing rectangle between " << fMarkerTopLeftPoint.x << ":" <<
-			fMarkerTopLeftPoint.y << " and " << where.x << ":" << where.y << std::endl;
-
-		Invalidate();
-
+			// refresh screen
+			Invalidate();
+		}
 	}
 }
 
@@ -224,3 +222,16 @@ CropView::_SetMarkerRect()
 
 	Invalidate();
 }
+
+
+void
+CropView::_UpdateCropParams()
+{
+	BMessage update_msg(CV_UPDATE_CROPVALUES);
+	update_msg.AddInt32("leftcrop", fLeftCrop);
+	update_msg.AddInt32("rightcrop", fRightCrop);
+	update_msg.AddInt32("topcrop", fTopCrop);
+	update_msg.AddInt32("bottomcrop", fBottomCrop);
+	fUpdateTarget->SendMessage(&update_msg);
+}
+
