@@ -18,6 +18,8 @@ class BMessenger;
 
 enum {
 	CV_UPDATE_CROPVALUES = 'cv00',
+	CV_ACTION_DRAW,
+	CV_ACTION_MOVE,
 };
 
 
@@ -44,6 +46,7 @@ private:
 	void		_SetDrawingRect();
 	void 		_SetMarkerRect();
 	void 		_UpdateCropParams();
+	bool		_IsOverBorder(BPoint point, BRect rect);
 
 	BBitmap*	fCurrentImage;
 	bool		fImageLoaded;
@@ -60,6 +63,7 @@ private:
 
 	bool		fMouseDown;
 	BPoint		fMarkerTopLeftPoint;
+	uint32		fMouseAction;
 
 	BMessenger* fUpdateTarget;
 };

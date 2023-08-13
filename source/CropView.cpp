@@ -77,6 +77,12 @@ CropView::MouseDown(BPoint where)
 			fMarkerTopLeftPoint = where;
 			fMouseDown = true;
 			SetMouseEventMask(B_FULL_POINTER_HISTORY);
+
+			// distinguish between drawing and moving
+			if (_IsOverBorder(where, fMarkerRect))
+				fMouseAction = CV_ACTION_MOVE;
+			else
+				fMouseAction = CV_ACTION_DRAW;
 		}
 	}
 }
@@ -235,3 +241,10 @@ CropView::_UpdateCropParams()
 	fUpdateTarget->SendMessage(&update_msg);
 }
 
+
+bool
+CropView::_IsOverBorder(BPoint point, BRect rect)
+{
+
+	return true;
+}
